@@ -1,10 +1,14 @@
 import originpro as op
 import os
+import re
 import random
+import tkinter as tk
+from tkinter import simpledialog
 import sys
 from pathlib import Path
 import Python_origin_functions as pof
 
+#fill this in, give directorys
 ################################################
 #File Paths
 working_folder = os.path.dirname(os.path.realpath(__file__)) + '\\'
@@ -12,7 +16,10 @@ working_folder = os.path.dirname(os.path.realpath(__file__)) + '\\'
 filename = "a2"
 p = Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Documents\Phd\2) Data\Devices\Repair a device\90,2000")   #read the path as a string
 working_file = p / filename
-################################################
+
+#templates_folder= link to origin folder
+#temporary
+# ################################################
 def origin_shutdown_exception_hook(exctype, value, traceback):
     '''Ensures Origin gets shut down if an uncaught exception'''
     op.exit()
@@ -23,8 +30,30 @@ if op and op.oext:
 if op.oext:
     op.set_show(True)
 
+
+#file paths need sorting here they are layed out
+#def make_folder():
+
+# ask user for working folder
+# input GUI box
+ROOT = tk.Tk()
+ROOT.withdraw()
+# noinspection PyTypeChecker
+user_specif_folder = simpledialog.askstring(title="Working folder",
+                                  prompt='please give working folder path'
+#check if user made input if not it breaks the sys
+pof.empty_variable(user_specif_folder)
+
+#todo Specify folder for task further loop through only text files
+#todo specify templates folder and each template as a specific path for easy calling
+#todo using os.path.abspath(folder_name) to specifies the origin graph templates  
+
+
+
+
+
 pof.measurements_present(working_folder,"endurance")
-#checks if directory and txt files are present using second argument
+#checks if directory in second argument exists and further if within that file txt files exist
 
 C0,C1 = pof.split_iv_sweep(working_file)
 
@@ -35,6 +64,7 @@ y_vals = C1
 #path_file = 'os.path.realpath(__file__)'
 # Full path to folder containing this script
 #working_folder = os.path.dirname(path_file) + '\\'
+
 
 # Cloneable template - Example 3
 wks = op.new_book('w', hidden = True)[0]
