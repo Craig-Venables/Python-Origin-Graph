@@ -8,82 +8,72 @@ import sys
 from pathlib import Path
 import Python_origin_functions as pof
 
-#fill this in, give directorys
-################################################
-#File Paths
-working_folder = os.path.dirname(os.path.realpath(__file__)) + '\\'
+#tile windows?
+pof.tile_all_windows(False)
 
-filename = "a2"
-p = Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Documents\Phd\2) Data\Devices\Repair a device\90,2000")   #read the path as a string
-working_file = p / filename
+#fill these in
+graph_template_folder=Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Documents\Phd\2) Data\OriginGraph\Graph Templates")
+directory_path = Path (r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder")
 
-#templates_folder= link to origin folder
-#temporary
-# ################################################
-def origin_shutdown_exception_hook(exctype, value, traceback):
-    '''Ensures Origin gets shut down if an uncaught exception'''
-    op.exit()
-    sys.__excepthook__(exctype, value, traceback)
+#Ensures Origin gets shut down if an uncaught exception
 if op and op.oext:
-    sys.excepthook = origin_shutdown_exception_hook
+    sys.excepthook = pof.origin_shutdown_exception_hook
 # Only run if external Python
 if op.oext:
     op.set_show(True)
 
 
-#file paths need sorting here they are layed out
-#def make_folder():
-
-# ask user for working folder
-# input GUI box
+# Input GUI box
 ROOT = tk.Tk()
 ROOT.withdraw()
 # noinspection PyTypeChecker
-user_specif_folder = simpledialog.askstring(title="Working folder",
-                                  prompt='please give working folder path'
-#check if user made input if not it breaks the sys
-pof.empty_variable(user_specif_folder)
+user_data_folder= Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder\Top left 001")
+user_save_folder= Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder\Origin Graphs")
+#user_data_folder = simpledialog.askstring(title="Working data folder",
+#                                   prompt='please give working data folder path')
+#
+# user_save_folder = simpledialog.askstring(title="Save Folder",
+#                                   prompt='please give save folder path')
 
-#todo Specify folder for task further loop through only text files
-#todo specify templates folder and each template as a specific path for easy calling
-#todo using os.path.abspath(folder_name) to specifies the origin graph templates  
+# checks if user made input if not breaks
+#pof.empty_variable(user_data_folder)
+#pof.empty_variable(user_save_folder)
+
+# loops through directory_path splits data and plots into origin using template from folder
+for filename in os.listdir(directory_path):
+    file_path = os.path.join(directory_path,filename)
+    if os.path.isdir(file_path):
+        # skip directories
+        continue
+    if filename.endswith(''):
+        with open(os.path.join(directory_path, filename), 'r') as file:
+            x_vals , y_vals = pof.split_iv_sweep(file_path)
+            pof.create_graph_from_template(x_vals,y_vals,graph_template_folder)
+            # splits data from file and plots within origin
+            print(f"{filename}")
 
 
+# checks if directory in second argument exists and further if within that file txt files exist
+#pof.measurements_present(user_data_folder,"iv sweep")
 
-
-
-pof.measurements_present(working_folder,"endurance")
-#checks if directory in second argument exists and further if within that file txt files exist
-
-C0,C1 = pof.split_iv_sweep(working_file)
-
-#data from file too list
-x_vals = C0
-y_vals = C1
-
-#path_file = 'os.path.realpath(__file__)'
-# Full path to folder containing this script
-#working_folder = os.path.dirname(path_file) + '\\'
-
-
-# Cloneable template - Example 3
-wks = op.new_book('w', hidden = True)[0]
-wks.from_list(0,x_vals, 'X Values')
-wks.from_list(1,y_vals, 'Y Values')
-tmpl = working_folder + 'Graph Templates\\(Iv)_Multi_Sweep_loop_Template(cloneable).otpu'
-wks.plot_cloneable(tmpl)
-
-# Tile all windows
-op.lt_exec('win-s T')
+#todo add save location, check if folder "graphs" exist if not create it
+#followed by changing directory into graphs folder and save the document there
 
 # Save the project to working folder
 # Only save if external Python
-if op.oext:
-    op.save(working_folder + 'gt_examples2.opju')
-# Only run if external Python
-if op.oext:
-    op.exit()
+# if op.oext:
+#     op.save(user_save_folder / 'gt_examples2.opju')
+# # Only run if external Python
+# if op.oext:
+#     op.exit()
 
-print ("working folder =" + working_folder)
 
 print (__file__)
+
+
+
+# other code for later
+
+# Full path to folder containing this script
+#path_file = 'os.path.realpath(__file__)'
+#his_script_path = os.path.dirname(path_file) + '\\'
