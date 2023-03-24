@@ -3,43 +3,51 @@ import os
 import re
 import sys
 import Equations as eq
-from originpro.graph import GLayer, Axis
-#gl.SetData()
+
+
+# gl.SetData()
 
 def tile_all_windows(x):
     if x == True:
         op.lt_exec('win-s T')
 
+
 def absolute_val(column):
     return [abs(x) for x in column]
+
 
 def filereader(readthisfile):
     with open(readthisfile, "r") as f:  # open the file as read only
         fread = f.readlines()
         fread.pop(0)
         return fread
+
+
 def empty_variable(var):
     if var == None or var == "":
         sys.exit("Please" " Enter " "Information")
 
+
 # Example graph template
-def create_graph_from_template(x_vals,y_vals,graph_template_folder):
+def create_graph_from_template(x_vals, y_vals, graph_template_folder):
     # Cloneable template - Example 3
-    wks = op.new_book('w', hidden = True)[0]
-    wks.from_list(0,x_vals, 'Voltage')
-    wks.from_list(1,y_vals, 'Current')
+    wks = op.new_book('w', hidden=True)[0]
+    wks.from_list(0, x_vals, 'Voltage')
+    wks.from_list(1, y_vals, 'Current')
     tmpl = graph_template_folder / "(Iv)_Multi_Sweep_loop_Template(cloneable).otpu"
     wks.plot_cloneable(tmpl)
 
-def graph_log_iv_merged(voltage_data, current_data,graph_template_folder):
+
+def graph_log_iv_merged(voltage_data, current_data, graph_template_folder):
     # Cloneable template - Example 3
-    wks = op.new_book('w', hidden = False)[0]
+    wks = op.new_book('w', hidden=False)[0]
     abs_current = absolute_val(current_data)
     wks.from_list(0, voltage_data, 'Voltage')
     wks.from_list(1, current_data, 'Current')
     wks.from_list(2, abs_current, 'Abs Current')
     tmpl = graph_template_folder / "LOG+IV_loops_merged_template_revisioin_4.0 (cloneable)"
     wks.plot_cloneable(tmpl)
+
 
 # return positive values of Voltage and corresponding Current
 def filter_positive_values(voltage_data, current_data):
@@ -54,6 +62,7 @@ def filter_positive_values(voltage_data, current_data):
             result_current.append(0)
     return result_voltage, result_current
 
+
 def filter_negative_values(voltage_data, current_data):
     result_voltage = []
     result_current = []
@@ -66,8 +75,9 @@ def filter_negative_values(voltage_data, current_data):
             result_current.append(0)
     return absolute_val(result_voltage), absolute_val(result_current)
 
-def all_graphs_from_template(voltage_data,current_data,area,distance,graph_template_folder):
-    wks = op.new_book('w', hidden = False)[0]
+
+def all_graphs_from_template(voltage_data, current_data, area, distance, graph_template_folder):
+    wks = op.new_book('w', hidden=False)[0]
     abs_current = absolute_val(current_data)
 
     # plot first 3 voltage current and abs(current)
@@ -76,12 +86,12 @@ def all_graphs_from_template(voltage_data,current_data,area,distance,graph_templ
     wks.from_list(2, abs_current, 'Abs Current')
 
     # find  positive values for data using functions "rpv"
-    voltage_data_positive,current_data_positive = filter_positive_values(voltage_data, current_data)
+    voltage_data_positive, current_data_positive = filter_positive_values(voltage_data, current_data)
 
     # run data through equations for positive values.
-    current_density_p = eq.current_density_eq(voltage_data_positive,current_data_positive,area,distance)
-    electric_field_p = eq.electric_field_eq(voltage_data_positive,distance)
-    current_over_voltage_p = eq.current_over_voltage_eq(voltage_data_positive,current_data_positive)
+    current_density_p = eq.current_density_eq(voltage_data_positive, current_data_positive, area, distance)
+    electric_field_p = eq.electric_field_eq(voltage_data_positive, distance)
+    current_over_voltage_p = eq.current_over_voltage_eq(voltage_data_positive, current_data_positive)
     voltage_to_the_half_p = eq.voltage_to_the_half_eq(voltage_data_positive)
 
     # get positive values and plot for positive regions only
@@ -94,9 +104,9 @@ def all_graphs_from_template(voltage_data,current_data,area,distance,graph_templ
     voltage_data_negative, current_data_negative = filter_negative_values(voltage_data, current_data)
 
     # run data through equations for negative values.
-    current_density_n = eq.current_density_eq(voltage_data_negative,current_data_negative,area,distance)
-    electric_field_n = eq.electric_field_eq(voltage_data_negative,distance)
-    current_over_voltage_n = eq.current_over_voltage_eq(voltage_data_negative,current_data_negative)
+    current_density_n = eq.current_density_eq(voltage_data_negative, current_data_negative, area, distance)
+    electric_field_n = eq.electric_field_eq(voltage_data_negative, distance)
+    current_over_voltage_n = eq.current_over_voltage_eq(voltage_data_negative, current_data_negative)
     voltage_to_the_half_n = eq.voltage_to_the_half_eq(voltage_data_negative)
 
     # get positive values and plot for positive regions only
@@ -112,7 +122,7 @@ def all_graphs_from_template(voltage_data,current_data,area,distance,graph_templ
     wks.plot_cloneable(tmpl)
 
 
-def realtime_monitor(x_vals,y_vals,graph_template_folder):
+def realtime_monitor(x_vals, y_vals, graph_template_folder):
     wks = op.new_book('w', hidden=True)[0]
     # Load graph template and add plots to both layers
     tmpl = graph_template_folder / "endurance.otpu"
@@ -120,6 +130,7 @@ def realtime_monitor(x_vals,y_vals,graph_template_folder):
     op.lt_exec('win -z')  # Maximize the graph window
     gr[0].add_plot(wks, 1, 0, type=230)  # type is template-defined, color is template-defined
     gr[1].add_plot(wks, 1, 0, type=230)  # type is template-defined, color is template-defined
+
 
 # def change_directory(folders):
 #     folders = ["retention", "endurance", "Iv sweeps", "graphs"]
@@ -142,13 +153,13 @@ def realtime_monitor(x_vals,y_vals,graph_template_folder):
 def check_folders_and_change_directory(folder_name):
     base_dir = os.getcwd() + '\\data'  # get current working directory as the base directory
     folders = ["retention", "endurance", "iv sweeps", "graphs"]
-    #changed_dir = base_dir + '\\' folder_name
+    # changed_dir = base_dir + '\\' folder_name
     for folder in folders:
         full_path = os.path.join(base_dir, folder)
         if not os.path.exists(full_path):
             os.makedirs(full_path)
-    os.chdir(os.path.join(base_dir,folder_name))
-    #print(f"Changed directory to {os.getcwd()}")
+    os.chdir(os.path.join(base_dir, folder_name))
+    # print(f"Changed directory to {os.getcwd()}")
 
 
 def measurements_present(working_folder, measurement_type):
@@ -161,6 +172,7 @@ def measurements_present(working_folder, measurement_type):
                     return ('txt files present')
     else:
         return ('no directory')
+
 
 def split_iv_sweep(data_file):
     print(f"{data_file}")
@@ -179,8 +191,10 @@ def split_iv_sweep(data_file):
         if value != []:
             C0.append(value[0])
             C1.append(value[1])
-    return (C0,C1)
-def split_endurance_sweep(working_data_folder,filename):
+    return (C0, C1)
+
+
+def split_endurance_sweep(working_data_folder, filename):
     file_path = working_data_folder + 'data\\endurance\\Endurance 1.8v.txt'
     print(file_path)
     data = []
@@ -213,10 +227,11 @@ def split_endurance_sweep(working_data_folder,filename):
     print("Current (Set):", current_set)
     print("Time (Reset):", time_reset)
     print("Current (Reset):", current_reset)
-    return (iteration,time_set,current_set,time_reset,current_reset)
+    return (iteration, time_set, current_set, time_reset, current_reset)
 
-#how to use the above
-#endurance_iter, endurance_set_t, endurance_set_i, endurance_reset_t,endurance_reset_i = split_endurance_sweep(working_data_folder,"Endurance 1.8v")
+
+# how to use the above
+# endurance_iter, endurance_set_t, endurance_set_i, endurance_reset_t,endurance_reset_i = split_endurance_sweep(working_data_folder,"Endurance 1.8v")
 
 #
 def split_retention_sweep(filename):
@@ -232,7 +247,7 @@ def split_retention_sweep(filename):
     # note that this is different from finding a zero-length match at
     # some point in the string.
     # Extract voltage from filename using regular expression
-    #match = re.search(r'(?<=v)'\w-, filename)
+    # match = re.search(r'(?<=v)'\w-, filename)
 
     match = re.search(r"voltage_(\d+)V_", filename)
     if match:
@@ -258,9 +273,10 @@ def split_retention_sweep(filename):
     print("Current:", current)
     print("Resistance:", resistance)
 
-    return (iteration,time,current,resistance)
+    return (iteration, time, current, resistance)
 
-def split_endurance_sweep(working_folder,filename):
+
+def split_endurance_sweep(working_folder, filename):
     file_path = working_folder + 'data\\endurance\\Endurance 1.8v.txt'
     print(file_path)
     data = []
@@ -294,7 +310,8 @@ def split_endurance_sweep(working_folder,filename):
     print("Current (Set):", current_set)
     print("Time (Reset):", time_reset)
     print("Current (Reset):", current_reset)
-    return (iteration,time_set,current_set,time_reset,current_reset)
+    return (iteration, time_set, current_set, time_reset, current_reset)
+
 
 def origin_shutdown_exception_hook(exctype, value, traceback):
     '''Ensures Origin gets shut down if an uncaught exception'''
