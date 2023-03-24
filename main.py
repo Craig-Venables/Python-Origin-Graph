@@ -8,12 +8,22 @@ import sys
 from pathlib import Path
 import Python_origin_functions as pof
 
-#tile windows?
+##################################################################################
+# Fill in these Values of depending on device
+# Area of device
+area=100E-6
+# Distance between electrodes
+distance=100E-9
+
+# tile windows?
 pof.tile_all_windows(False)
 
-#fill these in
+# fill these in for filepaths (temp)
 graph_template_folder=Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Documents\Phd\2) Data\OriginGraph\Graph Templates")
 directory_path = Path (r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder")
+
+
+##################################################################################
 
 #Ensures Origin gets shut down if an uncaught exception
 if op and op.oext:
@@ -28,6 +38,7 @@ ROOT.withdraw()
 # noinspection PyTypeChecker
 user_data_folder= Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder\Top left 001")
 user_save_folder= Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder\Origin Graphs")
+
 #user_data_folder = simpledialog.askstring(title="Working data folder",
 #                                   prompt='please give working data folder path')
 #
@@ -47,7 +58,7 @@ for filename in os.listdir(directory_path):
     if filename.endswith(''):
         with open(os.path.join(directory_path, filename), 'r') as file:
             x_vals , y_vals = pof.split_iv_sweep(file_path)
-            pof.create_graph_from_template_iv_log_merged(x_vals,y_vals,graph_template_folder)
+            pof.all_graphs_from_template(x_vals,y_vals,area,distance,graph_template_folder)
             # splits data from file and plots within origin
             print(f"{filename}")
 

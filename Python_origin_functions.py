@@ -2,11 +2,12 @@ import originpro as op
 import os
 import re
 import sys
-from originpro.graph import GLayer,Axis
+import Equations as eq
+from originpro.graph import GLayer, Axis
 #gl.SetData()
 
 def tile_all_windows(x):
-    if x== True:
+    if x == True:
         op.lt_exec('win-s T')
 
 def absolute_val(column):
@@ -21,15 +22,7 @@ def empty_variable(var):
     if var == None or var == "":
         sys.exit("Please" " Enter " "Information")
 
-def upper_axis_limit(array):
-    array.sort
-    return array[-1]
-def lower_axis_limit(array):
-    array.sort
-    return array[0]
-
-
-
+# Example graph template
 def create_graph_from_template(x_vals,y_vals,graph_template_folder):
     # Cloneable template - Example 3
     wks = op.new_book('w', hidden = True)[0]
@@ -38,7 +31,7 @@ def create_graph_from_template(x_vals,y_vals,graph_template_folder):
     tmpl = graph_template_folder / "(Iv)_Multi_Sweep_loop_Template(cloneable).otpu"
     wks.plot_cloneable(tmpl)
 
-def create_graph_from_template_iv_log_merged(voltage_data, current_data,graph_template_folder):
+def graph_log_iv_merged(voltage_data, current_data,graph_template_folder):
     # Cloneable template - Example 3
     wks = op.new_book('w', hidden = False)[0]
     abs_current = absolute_val(current_data)
@@ -47,21 +40,76 @@ def create_graph_from_template_iv_log_merged(voltage_data, current_data,graph_te
     wks.from_list(2, abs_current, 'Abs Current')
     tmpl = graph_template_folder / "LOG+IV_loops_merged_template_revisioin_4.0 (cloneable)"
     wks.plot_cloneable(tmpl)
-    # gl = GLayer
-    # gl.rescale('x')
-    #rescale graphs in template set too auto
 
-    #todo get rescale to work"AttributeError: 'list' object has no attribute 'obj'"
+# return positive values of Voltage and corresponding Current
+def filter_positive_values(voltage_data, current_data):
+    result_voltage = []
+    result_current = []
+    for v, c in zip(voltage_data, current_data):
+        if v >= 0:
+            result_voltage.append(v)
+            result_current.append(c)
+        else:
+            result_voltage.append(0)
+            result_current.append(0)
+    return result_voltage, result_current
 
+def filter_negative_values(voltage_data, current_data):
+    result_voltage = []
+    result_current = []
+    for v, c in zip(voltage_data, current_data):
+        if v <= 0:
+            result_voltage.append(v)
+            result_current.append(c)
+        else:
+            result_voltage.append(0)
+            result_current.append(0)
+    return absolute_val(result_voltage), absolute_val(result_current)
 
-def create_multi_graph_from_template(x_vals,y_vals,graph_template_folder):
-    # Cloneable template - Example 3
-    wks = op.new_book('w', hidden = True)[0]
-    wks.from_list(0,x_vals, 'X Values')
-    wks.from_list(1,y_vals, 'Y Values')
-    tmpl = graph_template_folder / "(Iv)_Multi_Sweep_loop_Template(cloneable).otpu"
+def all_graphs_from_template(voltage_data,current_data,area,distance,graph_template_folder):
+    wks = op.new_book('w', hidden = False)[0]
+    abs_current = absolute_val(current_data)
+
+    # plot first 3 voltage current and abs(current)
+    wks.from_list(0, voltage_data, 'Voltage')
+    wks.from_list(1, current_data, 'Current')
+    wks.from_list(2, abs_current, 'Abs Current')
+
+    # find  positive values for data using functions "rpv"
+    voltage_data_positive,current_data_positive = filter_positive_values(voltage_data, current_data)
+
+    # run data through equations for positive values.
+    current_density_p = eq.current_density_eq(voltage_data_positive,current_data_positive,area,distance)
+    electric_field_p = eq.electric_field_eq(voltage_data_positive,distance)
+    current_over_voltage_p = eq.current_over_voltage_eq(voltage_data_positive,current_data_positive)
+    voltage_to_the_half_p = eq.voltage_to_the_half_eq(voltage_data_positive)
+
+    # get positive values and plot for positive regions only
+    wks.from_list(3, current_density_p, 'Current Density')
+    wks.from_list(4, electric_field_p, 'Electric Field')
+    wks.from_list(5, current_over_voltage_p, 'Current/Voltage')
+    wks.from_list(6, voltage_to_the_half_p, 'Voltage^1/2')
+
+    # find negative values for data using functions "rpv" and "equations"
+    voltage_data_negative, current_data_negative = filter_negative_values(voltage_data, current_data)
+
+    # run data through equations for negative values.
+    current_density_n = eq.current_density_eq(voltage_data_negative,current_data_negative,area,distance)
+    electric_field_n = eq.electric_field_eq(voltage_data_negative,distance)
+    current_over_voltage_n = eq.current_over_voltage_eq(voltage_data_negative,current_data_negative)
+    voltage_to_the_half_n = eq.voltage_to_the_half_eq(voltage_data_negative)
+
+    # get positive values and plot for positive regions only
+    wks.from_list(7, absolute_val(voltage_data_negative), 'abs(Voltage)')
+    wks.from_list(8, absolute_val(current_data_negative), 'abs(Current)')
+    wks.from_list(9, absolute_val(current_density_n), 'abs(Current Density)')
+    wks.from_list(10, absolute_val(electric_field_n), 'abs(Electric Field)')
+    wks.from_list(11, absolute_val(current_over_voltage_n), 'abs(Current/Voltage)')
+    wks.from_list(12, absolute_val(voltage_to_the_half_n), 'abs(Voltage^1/2)')
+
+    # plots the graph using template provided, must be a clonable template
+    tmpl = graph_template_folder / "electron_transport_all(clonable).otpu"
     wks.plot_cloneable(tmpl)
-
 
 
 def realtime_monitor(x_vals,y_vals,graph_template_folder):
@@ -176,7 +224,6 @@ def split_retention_sweep(filename):
     time = []
     current = []
     resistance = []
-
     # re.search(pattern, string, flags=0)
     # Scan through string looking
     # for the first location where the regular expression pattern
@@ -184,7 +231,6 @@ def split_retention_sweep(filename):
     # Return None if no position in the string matches the pattern;
     # note that this is different from finding a zero-length match at
     # some point in the string.
-
     # Extract voltage from filename using regular expression
     #match = re.search(r'(?<=v)'\w-, filename)
 
@@ -212,7 +258,7 @@ def split_retention_sweep(filename):
     print("Current:", current)
     print("Resistance:", resistance)
 
-    return (x)
+    return (iteration,time,current,resistance)
 
 def split_endurance_sweep(working_folder,filename):
     file_path = working_folder + 'data\\endurance\\Endurance 1.8v.txt'
@@ -248,9 +294,7 @@ def split_endurance_sweep(working_folder,filename):
     print("Current (Set):", current_set)
     print("Time (Reset):", time_reset)
     print("Current (Reset):", current_reset)
-
-#print (working_folder)
-#split_endurance_sweep( working_folder,"Endurance 1.8v")
+    return (iteration,time_set,current_set,time_reset,current_reset)
 
 def origin_shutdown_exception_hook(exctype, value, traceback):
     '''Ensures Origin gets shut down if an uncaught exception'''
