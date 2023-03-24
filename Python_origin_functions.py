@@ -2,12 +2,14 @@ import originpro as op
 import os
 import re
 import sys
+from originpro.graph import GLayer,Axis
+#gl.SetData()
 
 def tile_all_windows(x):
     if x== True:
         op.lt_exec('win-s T')
 
-def absolute_column(column):
+def absolute_val(column):
     return [abs(x) for x in column]
 
 def filereader(readthisfile):
@@ -19,13 +21,57 @@ def empty_variable(var):
     if var == None or var == "":
         sys.exit("Please" " Enter " "Information")
 
+def upper_axis_limit(array):
+    array.sort
+    return array[-1]
+def lower_axis_limit(array):
+    array.sort
+    return array[0]
+
+
+
 def create_graph_from_template(x_vals,y_vals,graph_template_folder):
+    # Cloneable template - Example 3
+    wks = op.new_book('w', hidden = True)[0]
+    wks.from_list(0,x_vals, 'Voltage')
+    wks.from_list(1,y_vals, 'Current')
+    tmpl = graph_template_folder / "(Iv)_Multi_Sweep_loop_Template(cloneable).otpu"
+    wks.plot_cloneable(tmpl)
+
+def create_graph_from_template_iv_log_merged(voltage_data, current_data,graph_template_folder):
+    # Cloneable template - Example 3
+    wks = op.new_book('w', hidden = False)[0]
+    abs_current = absolute_val(current_data)
+    wks.from_list(0, voltage_data, 'Voltage')
+    wks.from_list(1, current_data, 'Current')
+    wks.from_list(2, abs_current, 'Abs Current')
+    tmpl = graph_template_folder / "LOG+IV_loops_merged_template_revisioin_4.0 (cloneable)"
+    wks.plot_cloneable(tmpl)
+    # gl = GLayer
+    # gl.rescale('x')
+    #rescale graphs in template set too auto
+
+    #todo get rescale to work"AttributeError: 'list' object has no attribute 'obj'"
+
+
+def create_multi_graph_from_template(x_vals,y_vals,graph_template_folder):
     # Cloneable template - Example 3
     wks = op.new_book('w', hidden = True)[0]
     wks.from_list(0,x_vals, 'X Values')
     wks.from_list(1,y_vals, 'Y Values')
     tmpl = graph_template_folder / "(Iv)_Multi_Sweep_loop_Template(cloneable).otpu"
     wks.plot_cloneable(tmpl)
+
+
+
+def realtime_monitor(x_vals,y_vals,graph_template_folder):
+    wks = op.new_book('w', hidden=True)[0]
+    # Load graph template and add plots to both layers
+    tmpl = graph_template_folder / "endurance.otpu"
+    gr = op.new_graph(template=tmpl)
+    op.lt_exec('win -z')  # Maximize the graph window
+    gr[0].add_plot(wks, 1, 0, type=230)  # type is template-defined, color is template-defined
+    gr[1].add_plot(wks, 1, 0, type=230)  # type is template-defined, color is template-defined
 
 # def change_directory(folders):
 #     folders = ["retention", "endurance", "Iv sweeps", "graphs"]
@@ -125,18 +171,26 @@ def split_endurance_sweep(working_data_folder,filename):
 #endurance_iter, endurance_set_t, endurance_set_i, endurance_reset_t,endurance_reset_i = split_endurance_sweep(working_data_folder,"Endurance 1.8v")
 
 #
-def split_retention_sweep(split_retention_sweep):
-    filename = "voltage_10V_data.txt"  # Replace with the name of your text file
+def split_retention_sweep(filename):
     iteration = []
     time = []
     current = []
     resistance = []
 
+    # re.search(pattern, string, flags=0)
+    # Scan through string looking
+    # for the first location where the regular expression pattern
+    # produces a match, and return a corresponding match object.
+    # Return None if no position in the string matches the pattern;
+    # note that this is different from finding a zero-length match at
+    # some point in the string.
+
     # Extract voltage from filename using regular expression
+    #match = re.search(r'(?<=v)'\w-, filename)
+
     match = re.search(r"voltage_(\d+)V_", filename)
     if match:
         voltage = int(match.group(1))
-        l
         print("Voltage:", voltage)
     else:
         print("Error: could not extract voltage from filename")

@@ -22,7 +22,6 @@ if op and op.oext:
 if op.oext:
     op.set_show(True)
 
-
 # Input GUI box
 ROOT = tk.Tk()
 ROOT.withdraw()
@@ -48,7 +47,7 @@ for filename in os.listdir(directory_path):
     if filename.endswith(''):
         with open(os.path.join(directory_path, filename), 'r') as file:
             x_vals , y_vals = pof.split_iv_sweep(file_path)
-            pof.create_graph_from_template(x_vals,y_vals,graph_template_folder)
+            pof.create_graph_from_template_iv_log_merged(x_vals,y_vals,graph_template_folder)
             # splits data from file and plots within origin
             print(f"{filename}")
 
