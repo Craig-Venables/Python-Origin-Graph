@@ -15,22 +15,23 @@ area = 100E-6
 # Distance between electrodes (ie active layer height)
 distance = 100E-9
 
-# tile windows?
-pof.tile_all_windows(False)
-
-# Please add file path for graph templates provided
-graph_template_folder = Path(
-    r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Documents\Phd\2) Data\OriginGraph\Graph Templates")
-
-###################################################################################
-# for debugging use this it removes the popup prompt for directory_path
+# if save file already exists within folder this breaks!
 save_file = False
-# if save file already exists this breaks!
+###################################################################################
+# for debugging so please ignore, this removes the popup prompt for directory_path
+# files to ignore when looking through directory add as appropriate
+ignore_files = ('.ini','.opju','.Wdf','.exe')
+# for the executable
+application_path = os.path.dirname(sys.executable)
+python_file_path = os.path.dirname(os.path.realpath(__file__)) + '\\'
+graph_template_folder = python_file_path + 'Template folder' + '\\'
+
 debugging = False
 close_origin = False
 if debugging:
     directory_path = Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder")
-
+# tile windows?
+pof.tile_all_windows(False)
 ##################################################################################
 
 # Ensures Origin gets shut down if an uncaught exception
@@ -56,12 +57,14 @@ for filename in os.listdir(directory_path):
     if os.path.isdir(file_path):
         # skip directories ie folders
         continue
-    if filename.endswith(''):
+    # do something with the file
+    if not filename.endswith(ignore_files):
         with open(os.path.join(directory_path, filename), 'r') as file:
             x_vals, y_vals = pof.split_iv_sweep(file_path)
             pof.all_graphs_from_template(x_vals, y_vals, area, distance, graph_template_folder,filename)
             # splits data from file and plots within origin
             print(f"{filename}")
+
 
 # Save the project to data folder
 if not debugging and save_file == True:

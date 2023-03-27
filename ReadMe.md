@@ -16,6 +16,8 @@ There is currently no exception for python to skip files that arnt txt files, so
 txt files and folders within the filepath specified. Due to this is if you set "save file" True you cannot run the
 program a second time without deleting/moving the origin file. This will be changed later. 
 
+ypu also need too install all packages use pipenv install
+
 ### Graph Templates:
 
 Please use the template provided as python places the data within the file in specific places however if you want to
