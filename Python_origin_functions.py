@@ -76,8 +76,8 @@ def filter_negative_values(voltage_data, current_data):
     return absolute_val(result_voltage), absolute_val(result_current)
 
 
-def all_graphs_from_template(voltage_data, current_data, area, distance, graph_template_folder):
-    wks = op.new_book('w', hidden=False)[0]
+def all_graphs_from_template(voltage_data, current_data, area, distance, graph_template_folder,filename):
+    wks = op.new_book('w', lname=f"{filename}", hidden=False)[0]
     abs_current = absolute_val(current_data)
 
     # plot first 3 voltage current and abs(current)
@@ -162,16 +162,17 @@ def check_folders_and_change_directory(folder_name):
     # print(f"Changed directory to {os.getcwd()}")
 
 
+# checks if directory in second argument exists and further if within that file txt files exist
 def measurements_present(working_folder, measurement_type):
     if os.path.exists(working_folder + measurement_type):  # check if folder endurance exists
         if len(os.listdir(working_folder + measurement_type)) == 0:
-            return ('folder empty')
+            return 'folder empty'
         else:
             for fname in os.listdir(working_folder + measurement_type):
                 if fname.endswith('.txt'):
-                    return ('txt files present')
+                    return 'txt files present'
     else:
-        return ('no directory')
+        return 'no directory'
 
 
 def split_iv_sweep(data_file):
@@ -188,10 +189,10 @@ def split_iv_sweep(data_file):
     C0 = []
     C1 = []
     for value in Data:
-        if value != []:
+        if value:
             C0.append(value[0])
             C1.append(value[1])
-    return (C0, C1)
+    return C0, C1
 
 
 def split_endurance_sweep(working_data_folder, filename):

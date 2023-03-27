@@ -10,18 +10,26 @@ import Python_origin_functions as pof
 
 ##################################################################################
 # Fill in these Values of depending on device
-# Area of device
+# Area of device electrode
 area = 100E-6
-# Distance between electrodes
+# Distance between electrodes (ie active layer height)
 distance = 100E-9
 
 # tile windows?
 pof.tile_all_windows(False)
 
-# fill these in for filepaths (temp)
+# Please add file path for graph templates provided
 graph_template_folder = Path(
     r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Documents\Phd\2) Data\OriginGraph\Graph Templates")
-directory_path = Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder")
+
+###################################################################################
+# for debugging use this it removes the popup prompt for directory_path
+save_file = False
+# if save file already exists this breaks!
+debugging = False
+close_origin = False
+if debugging:
+    directory_path = Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder")
 
 ##################################################################################
 
@@ -35,54 +43,35 @@ if op.oext:
 # Input GUI box
 ROOT = tk.Tk()
 ROOT.withdraw()
-# noinspection PyTypeChecker
-user_data_folder = Path(
-    r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder\Top left 001")
-user_save_folder = Path(
-    r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder\Origin Graphs")
-
-# user_data_folder = simpledialog.askstring(title="Working data folder",
-#                                   prompt='please give working data folder path')
-#
-# user_save_folder = simpledialog.askstring(title="Save Folder",
-#                                   prompt='please give save folder path')
-
-# checks if user made input if not breaks
-# pof.empty_variable(user_data_folder)
-# pof.empty_variable(user_save_folder)
+if not debugging:
+    user_data_folder_temp = simpledialog.askstring(title="Working data folder",
+                                                   prompt='please give working data folder path')
+    directory_path = rf"{user_data_folder_temp}"
+    # checks if user made input if not breaks
+    pof.empty_variable(user_data_folder_temp)
 
 # loops through directory_path splits data and plots into origin using template from folder
 for filename in os.listdir(directory_path):
     file_path = os.path.join(directory_path, filename)
     if os.path.isdir(file_path):
-        # skip directories
+        # skip directories ie folders
         continue
     if filename.endswith(''):
         with open(os.path.join(directory_path, filename), 'r') as file:
             x_vals, y_vals = pof.split_iv_sweep(file_path)
-            pof.all_graphs_from_template(x_vals, y_vals, area, distance, graph_template_folder)
+            pof.all_graphs_from_template(x_vals, y_vals, area, distance, graph_template_folder,filename)
             # splits data from file and plots within origin
             print(f"{filename}")
 
-# checks if directory in second argument exists and further if within that file txt files exist
-# pof.measurements_present(user_data_folder,"iv sweep")
+# Save the project to data folder
+if not debugging and save_file == True:
+    if op.oext:
+        op.save(user_data_folder_temp + "\\" + 'graphs_all_within_document.opju')
+        print("saved file in " f"{user_data_folder_temp}")
 
-# todo add save location, check if folder "graphs" exist if not create it
-# followed by changing directory into graphs folder and save the document there
-
-# Save the project to working folder
-# Only save if external Python
-# if op.oext:
-#     op.save(user_save_folder / 'gt_examples2.opju')
-# # Only run if external Python
-# if op.oext:
-#     op.exit()
-
+# Only run if external Python
+if close_origin == True:
+    if op.oext:
+        op.exit()
 
 print(__file__)
-
-# other code for later
-
-# Full path to folder containing this script
-# path_file = 'os.path.realpath(__file__)'
-# his_script_path = os.path.dirname(path_file) + '\\'
