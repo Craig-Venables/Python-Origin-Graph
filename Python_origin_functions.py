@@ -108,6 +108,7 @@ def all_graphs_from_template(voltage_data, current_data, area, distance, graph_t
     wks.from_list(11, absolute_val(current_over_voltage_n), 'abs(Current/Voltage)', units='A/v')
     wks.from_list(12, absolute_val(voltage_to_the_half_n), 'abs(Voltage^1/2)', units='V^1/2')
 
+
     # plots the graph using template provided, must be a clonable template
     electron_transport = graph_template_folder + 'Electron_transport_Final.otpu'
     sclc_positive = graph_template_folder + 'SCLC_Positive.otpu'
