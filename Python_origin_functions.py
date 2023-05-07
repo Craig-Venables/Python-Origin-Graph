@@ -66,8 +66,27 @@ def filter_negative_values(voltage_data, current_data):
             result_current.append(0)
     return absolute_val(result_voltage), absolute_val(result_current)
 
+def plot_into_workbook(voltage_data, current_data, graph_template_folder,filename,template_name):
+    # give the file path of the temple.ogwu
+    working_file = graph_template_folder + template_name
+    wks = op.load_book(working_file)[0]  # from user file folder
+
+    # Put array into workbook
+    wks.from_list(0, voltage_data, 'Voltage')
+    wks.from_list(1, current_data, 'Current')
+
+    # fixes name issue, sets names as it's broken in templates, *reportedly fixed now
+    wksn = op.find_book()  # Changes workbook name
+    wksn.lname = f"{filename}"
+    wks.plot_cloneable(graph_template_folder + 'Electron_all_using_otgw.otpu')
+    gp = op.find_graph() # changes graph name
+    gp.lname = wksn.lname # longname
+    #gp.name = wks.name # short name
+
 
 def all_graphs_from_template(voltage_data, current_data, area, distance, graph_template_folder,filename):
+    # This works only for my use case, please ignore
+
     wks = op.new_book('w', lname=f"{filename}", hidden=False)[0]
     abs_current = absolute_val(current_data)
 
@@ -108,23 +127,15 @@ def all_graphs_from_template(voltage_data, current_data, area, distance, graph_t
     wks.from_list(11, absolute_val(current_over_voltage_n), 'abs(Current/Voltage)', units='A/v')
     wks.from_list(12, absolute_val(voltage_to_the_half_n), 'abs(Voltage^1/2)', units='V^1/2')
 
-
     # plots the graph using template provided, must be a clonable template
     electron_transport = graph_template_folder + 'Electron_transport_Final.otpu'
     sclc_positive = graph_template_folder + 'SCLC_Positive.otpu'
-    # old code keep just incase
-    # tmpl = graph_template_folder / "electron_transport_all(clonable).otpu"
 
-    #gp = op.new_graph()
-    # wks = op.find_sheet()
-    #wb = wks.get_book()
-    # wb.add_sheet()
-    # wks.activate()
-
-    # plot relevant graphs
+    wks.lname= f"{filename}"
     wks.plot_cloneable(electron_transport)
-    #wks.plot_cloneable(sclc_positive)
-
+    gp = op.find_graph()
+    gp.lname = wks.lname
+    gp.name = wks.name
 
 def split_iv_sweep(data_file):
     print(f"{data_file}")

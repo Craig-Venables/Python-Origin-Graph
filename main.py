@@ -20,13 +20,13 @@ save_file = False
 ###################################################################################
 # for debugging so please ignore, this removes the popup prompt for directory_path
 # files to ignore when looking through directory add as appropriate
-ignore_files = ('.ini','.opju','.Wdf','.exe')
+ignore_files = ('.ini','.opju','.Wdf','.exe', '.ogwu')
 # for the executable
 application_path = os.path.dirname(sys.executable)
 python_file_path = os.path.dirname(os.path.realpath(__file__)) + '\\'
 graph_template_folder = python_file_path + 'Template folder' + '\\'
 
-debugging = False
+debugging = True
 close_origin = False
 if debugging:
     directory_path = Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder")
@@ -61,7 +61,8 @@ for filename in os.listdir(directory_path):
     if not filename.endswith(ignore_files):
         with open(os.path.join(directory_path, filename), 'r') as file:
             x_vals, y_vals = pof.split_iv_sweep(file_path)
-            pof.all_graphs_from_template(x_vals, y_vals, area, distance, graph_template_folder,filename)
+            #pof.all_graphs_from_template(x_vals, y_vals, area, distance, graph_template_folder,filename)
+            pof.plot_into_workbook(x_vals, y_vals, graph_template_folder,filename, 'MasterTemplate_v2.ogwu')
             # splits data from file and plots within origin
             print(f"{filename}")
 
