@@ -156,8 +156,11 @@ def split_iv_sweep(data_file):
             C1.append(value[1])
     return C0, C1
 
+def save_fig(path,filename):
+    g.save_fig(path + f"{filename}", width=500)
 
-
+def save_to_pdf():
+    return()
 
 def origin_shutdown_exception_hook(exctype, value, traceback):
     '''Ensures Origin gets shut down if an uncaught exception'''

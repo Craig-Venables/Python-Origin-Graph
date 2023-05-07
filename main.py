@@ -65,6 +65,7 @@ for filename in os.listdir(directory_path):
             pof.plot_into_workbook(x_vals, y_vals, graph_template_folder,filename, 'MasterTemplate_v2.ogwu')
             # splits data from file and plots within origin
             print(f"{filename}")
+            save_file(directory_path,filename)
 
 
 # Save the project to data folder
