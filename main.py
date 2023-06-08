@@ -17,19 +17,24 @@ distance = 100E-9
 
 # if save file already exists within folder this breaks!
 save_file = False
+Pictures = True  # export pictures to folder?
+Plot_iv_log_only = False
+debugging = False
+close_origin = False
+
 ###################################################################################
 # for debugging so please ignore, this removes the popup prompt for directory_path
 # files to ignore when looking through directory add as appropriate
-ignore_files = ('.ini','.opju','.Wdf','.exe', '.ogwu')
+ignore_files = ('.ini', '.opju', '.Wdf', '.exe', '.ogwu', '.jpg', '.png')
 # for the executable
 application_path = os.path.dirname(sys.executable)
 python_file_path = os.path.dirname(os.path.realpath(__file__)) + '\\'
 graph_template_folder = python_file_path + 'Template folder' + '\\'
 
-debugging = True
-close_origin = False
 if debugging:
     directory_path = Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder")
+
+    # directory_path = r("C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder")
 # tile windows?
 pof.tile_all_windows(False)
 ##################################################################################
@@ -51,6 +56,7 @@ if not debugging:
     # checks if user made input if not breaks
     pof.empty_variable(user_data_folder_temp)
 
+
 # loops through directory_path splits data and plots into origin using template from folder
 for filename in os.listdir(directory_path):
     file_path = os.path.join(directory_path, filename)
@@ -60,19 +66,45 @@ for filename in os.listdir(directory_path):
     # do something with the file
     if not filename.endswith(ignore_files):
         with open(os.path.join(directory_path, filename), 'r') as file:
-            x_vals, y_vals = pof.split_iv_sweep(file_path)
-            #pof.all_graphs_from_template(x_vals, y_vals, area, distance, graph_template_folder,filename)
-            pof.plot_into_workbook(x_vals, y_vals, graph_template_folder,filename, 'MasterTemplate_v2.ogwu')
-            # splits data from file and plots within origin
-            print(f"{filename}")
-            save_file(directory_path,filename)
 
+            #Splits iv sweep into usable arrays
+            x_vals, y_vals = pof.split_iv_sweep(file_path)
+
+            # beings the ploting depending on boolean parameters
+            if Pictures == True:
+                # Graphs use python for the calculations
+                pof.plot_into_workbook_cal(x_vals, y_vals, area, distance, graph_template_folder, filename, Plot_iv_log_only)
+                if not Plot_iv_log_only == True:
+                    pof.check_if_folder_exists(directory_path, 'Exported Graphs png (Transport)')
+                    g = op.find_graph()
+                    filename_ext = f"{filename}" + '.png'
+                    exported_path = directory_path + '\\Exported Graphs png (Transport)'
+                    g.save_fig(str(exported_path) + '\\' + f"{filename_ext}", width=500)
+                else:
+                    pof.check_if_folder_exists(directory_path, 'Exported Graphs png (iv_log)')
+                    g = op.find_graph()
+                    filename_ext = f"{filename}" + '.png'
+                    exported_path = directory_path + '\\Exported Graphs png (iv_log)'
+                    g.save_fig(str(exported_path) + '\\' + f"{filename_ext}", width=500)
+
+            else:
+                # uses origin for all the calculations this uses a different graph template
+                pof.plot_into_workbook(x_vals, y_vals, graph_template_folder, filename, 'MasterTemplate_v2.ogwu')
+
+            # # splits data from file and plots within origin
+            # print(f"{filename}")
+            #
+            # # save fig dosnt work though
+            # g = op.find_graph()
+            # filename_ext = f"{filename}" + '.png'
+            # g.save_fig(str(directory_path) + '\\' + f"{filename_ext}", width=500)
+            # print("this is", directory_path)
 
 # Save the project to data folder
-if not debugging and save_file == True:
+if save_file == True:
     if op.oext:
-        op.save(user_data_folder_temp + "\\" + 'graphs_all_within_document.opju')
-        print("saved file in " f"{user_data_folder_temp}")
+        op.save(str(directory_path) + "\\" + 'Graphs.opju')
+        print("saved file in " f"{directory_path}")
 
 # Only run if external Python
 if close_origin == True:

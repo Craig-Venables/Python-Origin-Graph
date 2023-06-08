@@ -84,7 +84,7 @@ def plot_into_workbook(voltage_data, current_data, graph_template_folder,filenam
     #gp.name = wks.name # short name
 
 
-def all_graphs_from_template(voltage_data, current_data, area, distance, graph_template_folder,filename):
+def plot_into_workbook_cal(voltage_data, current_data, area, distance, graph_template_folder, filename, iv_graphs_yes):
     # This works only for my use case, please ignore
 
     wks = op.new_book('w', lname=f"{filename}", hidden=False)[0]
@@ -129,13 +129,19 @@ def all_graphs_from_template(voltage_data, current_data, area, distance, graph_t
 
     # plots the graph using template provided, must be a clonable template
     electron_transport = graph_template_folder + 'Electron_transport_Final.otpu'
-    sclc_positive = graph_template_folder + 'SCLC_Positive.otpu'
+    iv_log = graph_template_folder + 'LOG+IV_v3.otpu'
 
+    if not iv_graphs_yes == True:
+        wks.plot_cloneable(electron_transport)
+    else:
+        wks.plot_cloneable(iv_log)
+
+    # Fix short and long names of files
     wks.lname= f"{filename}"
-    wks.plot_cloneable(electron_transport)
     gp = op.find_graph()
     gp.lname = wks.lname
     gp.name = wks.name
+
 
 def split_iv_sweep(data_file):
     print(f"{data_file}")
@@ -161,6 +167,12 @@ def save_fig(path,filename):
 
 def save_to_pdf():
     return()
+
+def check_if_folder_exists(directory_path,foldername):
+    if not os.path.exists(str(directory_path) + '\\' + f"{foldername}"):
+        os.makedirs(str(directory_path) + '\\' + f"{foldername}")
+        return f"{foldername}", "exists"
+    return 'already exists'
 
 def origin_shutdown_exception_hook(exctype, value, traceback):
     '''Ensures Origin gets shut down if an uncaught exception'''
