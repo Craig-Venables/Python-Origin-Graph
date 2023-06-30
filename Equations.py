@@ -1,16 +1,5 @@
 # Here is where all the equations that are used are defined
 
-# def current_density_eq(v,i,a,d):
-#     current_density=[]
-#     for voltage,current in zip(v, i):
-#         if voltage or current ==0:
-#             current_density.append(None)
-#             continue
-#         new_num= (d / ((voltage / current) * a**2)) * (voltage / d)
-# if new num gives invalde num retun 0
-#         print(current_density)
-#         current_density.append(new_num)
-#     return current_density
 
 def weird_division(n, d):
     return n / d if d else 0

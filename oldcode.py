@@ -11,6 +11,65 @@
 # #temporary
 # ################################################
 
+# # loops through directory_path splits data and plots into origin using template from folder
+# for filename in os.listdir(directory_path):
+#     file_path = os.path.join(directory_path, filename)
+#     if os.path.isdir(file_path):
+#          # skip directories ie folders
+#         continue
+#     # do something with the file
+#     filename_in_dir_exists(directory_path)
+#     if not filename.endswith(ignore_files):
+#         with open(os.path.join(directory_path, filename), 'r') as file:
+#             #Splits iv sweep into usable arrays
+#             x_vals, y_vals = pof.split_iv_sweep(file_path)
+#             # beings the ploting depending on boolean parameters
+#             if Pictures == True:
+#                 # Graphs use python for the calculations
+#                 pof.plot_into_workbook_cal(x_vals, y_vals, area, distance, graph_template_folder, filename, Plot_iv_log_only)
+#                 if Plot_iv_log_only:
+#                     pof.plot_iv_log_and_save(directory_path, filename)
+#                 else:
+#                     pof.plot_transport_and_save(directory_path, filename)
+#             else:
+#                 # uses origin for all the calculations this uses a different graph template
+#                 pof.plot_into_workbook(x_vals, y_vals, graph_template_folder, filename, 'MasterTemplate_v2.ogwu')
+#
+#
+
+# def filename_in_dir_exists(directory_path,ignore_files):
+#     # loops through directory_path splits data and plots into origin using template from folder
+#     for filename in os.listdir(directory_path):
+#         file_path = os.path.join(directory_path, filename)
+#         if os.path.isdir(file_path):
+#             # skip directories ie folders
+#             continue
+#         # do something with the file
+#         if not filename.endswith(ignore_files):
+#             return filename,file_path
+# def ignore_file_extensions(filename):
+#     if not filename.endswith(ignore_files):
+#         return filename, file_path
+#
+# def main(filename,file_path):
+#     with open(os.path.join(directory_path, filename), 'r') as file:
+#         #Splits iv sweep into usable arrays
+#         x_vals, y_vals = pof.split_iv_sweep(file_path)
+#         # beings the ploting depending on boolean parameters
+#         if Pictures == True:
+#             # Graphs use python for the calculations
+#             pof.plot_into_workbook_cal(x_vals, y_vals, area, distance, graph_template_folder, filename, Plot_iv_log_only)
+#             if Plot_iv_log_only:
+#                 pof.plot_iv_log_and_save(directory_path, filename)
+#             else:
+#                 pof.plot_transport_and_save(directory_path, filename)
+#         else:
+#             # uses origin for all the calculations this uses a different graph template
+#             pof.plot_into_workbook(x_vals, y_vals, graph_template_folder, filename, 'MasterTemplate_v2.ogwu')
+#
+# for filename in
+# filename,file_path=filename_in_dir_exists(directory_path,ignore_files)
+# main(filename, file_path)
 def upper_axis_limit(array):
     array.sort
     return array[-1]
@@ -63,3 +122,15 @@ def measurements_present(working_folder, measurement_type):
                     return 'txt files present'
     else:
         return 'no directory'
+
+# def current_density_eq(v,i,a,d):
+#     current_density=[]
+#     for voltage,current in zip(v, i):
+#         if voltage or current ==0:
+#             current_density.append(None)
+#             continue
+#         new_num= (d / ((voltage / current) * a**2)) * (voltage / d)
+# if new num gives invalde num retun 0
+#         print(current_density)
+#         current_density.append(new_num)
+#     return current_density
