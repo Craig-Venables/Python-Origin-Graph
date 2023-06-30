@@ -84,6 +84,7 @@ def plot_into_workbook(voltage_data, current_data, graph_template_folder,filenam
     #gp.name = wks.name # short name
 
 
+
 def plot_into_workbook_cal(voltage_data, current_data, area, distance, graph_template_folder, filename, iv_graphs_yes):
     # This works only for my use case, please ignore
 
@@ -142,6 +143,55 @@ def plot_into_workbook_cal(voltage_data, current_data, area, distance, graph_tem
     gp.lname = wks.lname
     gp.name = wks.name
 
+def plot_transport_and_save(directory_path,filename):
+    check_if_folder_exists(directory_path, 'Exported Graphs png (Transport)')
+    g = op.find_graph()
+    filename_ext = f"{filename}" + '.png'
+    exported_path = directory_path + '\\Exported Graphs png (Transport)'
+    g.save_fig(str(exported_path) + '\\' + f"{filename_ext}")
+    print("image saved")
+
+def plot_iv_log_and_save(directory_path,filename):
+    check_if_folder_exists(directory_path, 'Exported Graphs png (iv_log)')
+    g = op.find_graph()
+    filename_ext = f"{filename}" + '.png'
+    exported_path = directory_path + '\\Exported Graphs png (iv_log)'
+    g.save_fig(str(exported_path) + '\\' + f"{filename_ext}")
+    # , width=500
+    print ("image saved")
+
+
+
+#
+# def process_data_folders(parent_folder):
+#     # Check if the parent folder exists and is a directory
+#     if not os.path.exists(parent_folder) or not os.path.isdir(parent_folder):
+#         print("Invalid parent folder path.")
+#         return
+#
+#     # Iterate over subdirectories in the parent folder
+#     for folder_name in os.listdir(parent_folder):
+#         folder_path = os.path.join(parent_folder, folder_name)
+#
+#         # Check if the current item is a subdirectory
+#         if os.path.isdir(folder_path):
+#             # Process the current data folder
+#             process_data_folder(folder_path)
+#
+# def process_data_folder(folder_path):
+#     # Implement your graph plotting code here for the specified folder
+#     # You can use the 'folder_path' parameter to access the current data folder
+#
+#     # Example: Print the path of the folder being processed
+#     print(f"Processing folder: {folder_path}")
+#
+#     # Your graph plotting code goes here
+#
+# # Example usage
+# parent_folder = "/path/to/parent/folder"  # Replace with the path to your parent folder
+# process_data_folders(parent_folder)
+#
+
 
 def split_iv_sweep(data_file):
     print(f"{data_file}")
@@ -161,6 +211,7 @@ def split_iv_sweep(data_file):
             C0.append(value[0])
             C1.append(value[1])
     return C0, C1
+
 
 def save_fig(path,filename):
     g.save_fig(path + f"{filename}", width=500)

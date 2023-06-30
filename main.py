@@ -7,6 +7,8 @@ from tkinter import simpledialog
 import sys
 from pathlib import Path
 import Python_origin_functions as pof
+import ClassEquations as eq
+
 
 ##################################################################################
 # Fill in these Values of depending on device
@@ -18,14 +20,18 @@ distance = 100E-9
 # if save file already exists within folder this breaks!
 save_file = False
 Pictures = True  # export pictures to folder?
-Plot_iv_log_only = False
+Plot_iv_log_only = True
 debugging = False
 close_origin = False
 
 ###################################################################################
 # for debugging so please ignore, this removes the popup prompt for directory_path
 # files to ignore when looking through directory add as appropriate
-ignore_files = ('.ini', '.opju', '.Wdf', '.exe', '.ogwu', '.jpg', '.png')
+
+global ignore_files
+ignore_files = ('.ini', '.opju', '.Wdf', '.exe', '.ogwu', '.jpg', \
+                '.png' , '.csv', '.bat', '.bin', '.docx', '.doc', \
+                '.gif', '.mp3', '.pps', '.ppsx', '.tmp', '.zip')
 # for the executable
 application_path = os.path.dirname(sys.executable)
 python_file_path = os.path.dirname(os.path.realpath(__file__)) + '\\'
@@ -33,7 +39,6 @@ graph_template_folder = python_file_path + 'Template folder' + '\\'
 
 if debugging:
     directory_path = Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder")
-
     # directory_path = r("C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder")
 # tile windows?
 pof.tile_all_windows(False)
@@ -57,48 +62,48 @@ if not debugging:
     pof.empty_variable(user_data_folder_temp)
 
 
-# loops through directory_path splits data and plots into origin using template from folder
-for filename in os.listdir(directory_path):
-    file_path = os.path.join(directory_path, filename)
-    if os.path.isdir(file_path):
-        # skip directories ie folders
-        continue
-    # do something with the file
-    if not filename.endswith(ignore_files):
-        with open(os.path.join(directory_path, filename), 'r') as file:
+# using the class for eq
+voltage_data = []
+current_data = []
 
-            #Splits iv sweep into usable arrays
-            x_vals, y_vals = pof.split_iv_sweep(file_path)
+eq = eq()
+eq.voltage_data = voltage_data
+eq.current_data = current_data
 
-            # beings the ploting depending on boolean parameters
-            if Pictures == True:
-                # Graphs use python for the calculations
-                pof.plot_into_workbook_cal(x_vals, y_vals, area, distance, graph_template_folder, filename, Plot_iv_log_only)
-                if not Plot_iv_log_only == True:
-                    pof.check_if_folder_exists(directory_path, 'Exported Graphs png (Transport)')
-                    g = op.find_graph()
-                    filename_ext = f"{filename}" + '.png'
-                    exported_path = directory_path + '\\Exported Graphs png (Transport)'
-                    g.save_fig(str(exported_path) + '\\' + f"{filename_ext}", width=500)
+
+
+
+
+def main():
+    # loops through directory_path splits data and plots into origin using template from folder
+    for filename in os.listdir(directory_path):
+        file_path = os.path.join(directory_path, filename)
+
+        if os.path.isdir(file_path):
+            # skip directories ie folders
+            continue
+
+        # do something with the file
+        if not filename.endswith(ignore_files):
+            with open(os.path.join(directory_path, filename), 'r') as file:
+                # Splits iv sweep into usable arrays
+                x_vals, y_vals = pof.split_iv_sweep(file_path)
+                # beings the ploting depending on boolean parameters
+                if Pictures == True:
+                    # Graphs use python for the calculations
+                    pof.plot_into_workbook_cal(x_vals, y_vals, area, distance, graph_template_folder, filename,
+                                               Plot_iv_log_only)
+                    if Plot_iv_log_only:
+                        pof.plot_iv_log_and_save(directory_path, filename)
+                    else:
+                        pof.plot_transport_and_save(directory_path, filename)
                 else:
-                    pof.check_if_folder_exists(directory_path, 'Exported Graphs png (iv_log)')
-                    g = op.find_graph()
-                    filename_ext = f"{filename}" + '.png'
-                    exported_path = directory_path + '\\Exported Graphs png (iv_log)'
-                    g.save_fig(str(exported_path) + '\\' + f"{filename_ext}", width=500)
+                    # uses origin for all the calculations this uses a different graph template
+                    pof.plot_into_workbook(x_vals, y_vals, graph_template_folder, filename, 'MasterTemplate_v2.ogwu')
 
-            else:
-                # uses origin for all the calculations this uses a different graph template
-                pof.plot_into_workbook(x_vals, y_vals, graph_template_folder, filename, 'MasterTemplate_v2.ogwu')
+main()
 
-            # # splits data from file and plots within origin
-            # print(f"{filename}")
-            #
-            # # save fig dosnt work though
-            # g = op.find_graph()
-            # filename_ext = f"{filename}" + '.png'
-            # g.save_fig(str(directory_path) + '\\' + f"{filename_ext}", width=500)
-            # print("this is", directory_path)
+
 
 # Save the project to data folder
 if save_file == True:
