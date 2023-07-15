@@ -1,9 +1,9 @@
 import originpro as op
-import ClassEquations as ce
+import data_manipulation as ce
 import file_managment as fm
 
 
-class plot_graph:
+class plot:
     """
     Class for all functions for data manipulation
 

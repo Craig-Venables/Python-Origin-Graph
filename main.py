@@ -4,19 +4,21 @@ import tkinter as tk
 from tkinter import simpledialog
 import sys
 from pathlib import Path
-import ClassGraph as cg
-import ClassEquations as ce
+import graph as cg
+import data_manipulation as ce
 import parameters as p
 
 
 ##################################################################################
-# Fill in these Values of depending on device
-
-# if save file already exists within folder this breaks!
+# save file?
 save_file = True
-Pictures = True  # export pictures to folder?
+# export pictures to folder?
+Pictures = True
+# plot where python does calculations
 Plot_iv_log_only = True
+# if debugging set True
 debugging = False
+# Close origin after completion
 close_origin = False
 
 ###################################################################################
@@ -31,16 +33,9 @@ if debugging:
     directory_path = Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder")
 
 # tile windows?
-cg.plot_graph.tile_all_windows(False)
-#pof.tile_all_windows(False)
-##################################################################################
+cg.plot.tile_all_windows(False)
 
-# Ensures Origin gets shut down if an uncaught exception
-# if op and op.oext:
-#     sys.excepthook = pof.origin_shutdown_exception_hook
-# #fix
-
-# Only run if external Python
+# Only run if external Python, Opens instance of origin
 if op.oext:
     op.set_show(True)
 
@@ -55,10 +50,12 @@ if not debugging:
     directory_path = rf"{user_data_folder_temp}"
     # checks if user made input if not breaks
     ce.functions.empty_variable(user_data_folder_temp)
-    #pof.empty_variable(user_data_folder_temp)
+
+# todo create the main loops as a function adding in the op.oext: function to open multiple instances /
+#  of origin graph: try however and find a limit so it dosnot open too many!
+
 
 # loops through directory given called directory path
-#
 
 
 # loops through directory_path splits data and plots into origin using template from folder
@@ -76,27 +73,23 @@ for filename in os.listdir(directory_path):
 
             voltage_data, current_data = ce.split_iv_sweep(file_path)
 
-            #voltage_data, current_data = ce.split_iv_sweep()
-            # voltage_data, current_data = pof.split_iv_sweep(file_path)
-
             # beings the plotting depending on boolean parameters
             if Pictures == True:
+
                 # Graphs use python for the calculations
-                pg = cg.plot_graph(voltage_data,current_data,directory_path,filename,graph_template_folder )
+                pg = cg.plot(voltage_data, current_data, directory_path, filename, graph_template_folder)
                 pg.plot_origin_using_python()
 
-                #pof.plot_into_workbook_cal(x_vals, y_vals, area, distance, graph_template_folder, filename,
-                #                           Plot_iv_log_only)
                 if Plot_iv_log_only:
 
-                    #pof.plot_iv_log_and_save(directory_path, filename)
                     pg.plot_iv_log_and_save()
+
                 else:
-                    #pof.plot_transport_and_save(directory_path, filename)
+                    # plots transport where python does all the calculations
                     pg.plot_transport_and_save()
             else:
-                # uses origin for all the calculations this uses a different graph template
-                #pof.plot_into_workbook(x_vals, y_vals, graph_template_folder, filename, 'MasterTemplate_v2.ogwu')
+                # plots transport graphs where origin calculates the columns
+                # used for own template
                 pg.plot_into_workbook()
 
 
