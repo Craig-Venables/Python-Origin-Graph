@@ -13,9 +13,9 @@ import parameters as p
 # Fill in these Values of depending on device
 
 # if save file already exists within folder this breaks!
-save_file = False
+save_file = True
 Pictures = True  # export pictures to folder?
-Plot_iv_log_only = False
+Plot_iv_log_only = True
 debugging = False
 close_origin = False
 
@@ -89,12 +89,15 @@ for filename in os.listdir(directory_path):
                 #                           Plot_iv_log_only)
                 if Plot_iv_log_only:
 
-                    pof.plot_iv_log_and_save(directory_path, filename)
+                    #pof.plot_iv_log_and_save(directory_path, filename)
+                    pg.plot_iv_log_and_save()
                 else:
-                    pof.plot_transport_and_save(directory_path, filename)
+                    #pof.plot_transport_and_save(directory_path, filename)
+                    pg.plot_transport_and_save()
             else:
                 # uses origin for all the calculations this uses a different graph template
-                pof.plot_into_workbook(x_vals, y_vals, graph_template_folder, filename, 'MasterTemplate_v2.ogwu')
+                #pof.plot_into_workbook(x_vals, y_vals, graph_template_folder, filename, 'MasterTemplate_v2.ogwu')
+                pg.plot_into_workbook()
 
 
             # # splits data from file and plots within origin

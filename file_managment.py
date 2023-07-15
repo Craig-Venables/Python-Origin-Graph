@@ -1,6 +1,7 @@
 import os
 
 
+
 class directory():
     """
     Class for all functions for data manipulation
@@ -11,10 +12,12 @@ class directory():
     """
 
     # This class represents all functions for directory management.
-    def __init__(self, filepath, filename, foldername) -> None:
+    def __init__(self, filepath="", filename="", foldername="", directory_path="") -> None:
         self.filepath = filepath
         self.filename = filename
-        self.fname = foldername
+        self.fol_name = foldername
+        self.d_path = directory_path
+
 
     def filereader(self):
         with open(self.filepath, "r") as f:  # open the file as read only
@@ -23,7 +26,7 @@ class directory():
             return fread
 
     def check_if_folder_exists(self):
-        if not os.path.exists(str(self.filepath) + '\\' + f"{self.fname}"):
-            os.makedirs(str(self.filepath) + '\\' + f"{self.fname}")
-            return f"{self.fname}", "exists"
+        if not os.path.exists(str(self.d_path) + '\\' + f"{self.fol_name}"):
+            os.makedirs(str(self.d_path) + '\\' + f"{self.fol_name}")
+            return f"{self.fol_name}", "exists"
         return 'already exists'

@@ -2,9 +2,12 @@ import sys
 import file_managment as fm
 
 
+def absolute_val(column):
+    return [abs(x) for x in column]
+
 def split_iv_sweep(filepath):
     # print(f"{filepath}")
-    B = fm.directory.filereader(filepath)
+    B = fm.directory(filepath).filereader()
     Data = []
     for i, line in enumerate(B):
         C = (line.split('\t'))
@@ -20,6 +23,7 @@ def split_iv_sweep(filepath):
             v_data_array.append(value[0])
             c_data_array.append(value[1])
     return v_data_array, c_data_array
+
 
 # graph1 = functions(voltage_data,current_data)
 # with graph 1 being an instance of functions with data
@@ -37,16 +41,15 @@ class functions:
     """
 
     # This class represents all the functions used for sorting the data.
-    def __init__(self, voltage_data, current_data, filepath, distance=100E-9, area=100E-6) -> None:
+    def __init__(self, voltage_data, current_data, filepath="", distance=100E-9, area=100E-6) -> None:
         self.v_data = voltage_data
         self.c_data = current_data
         self.distance = distance
         self.area = area
         self.filepath = filepath
 
-
-        self.file = fm.directory()
-
+        self.direct = fm.directory()
+        self.direct.filepath = self.filepath
 
     # return positive values of Voltage and corresponding Current
     def filter_positive_values(self):
@@ -72,7 +75,7 @@ class functions:
             else:
                 result_voltage.append(0)
                 result_current.append(0)
-        return self.absolute_val(result_voltage), self.absolute_val(result_current)
+        return absolute_val(result_voltage), absolute_val(result_current)
 
     def weird_division(self, n):
         return n / self.distance if self.distance else 0
@@ -82,11 +85,6 @@ class functions:
             return x / y
         except ZeroDivisionError:
             return 0
-
-    #this might not work pls check
-    def absolute_val(self):
-        return [abs(x) for x in self]
-
 
 
     def empty_variable(var):
@@ -114,9 +112,9 @@ class functions:
 
     # Below are the equations used
 
-    def current_density_eq(self):
+    def current_density_eq(self, v_data, c_data):
         current_density = []
-        for voltage, current in zip(self.v_data, self.c_data):
+        for voltage, current in zip(v_data, c_data):
             if voltage == 0 or current == 0:
                 current_density.append(0)
                 # for checking for divide by zero error
@@ -125,9 +123,9 @@ class functions:
             current_density.append(new_num)
         return current_density
 
-    def electric_field_eq(self):
+    def electric_field_eq(self, v_data):
         electric_field = []
-        for voltage in self.v_data:
+        for voltage in v_data:
             if voltage == 0:
                 electric_field.append(0)
                 continue
@@ -135,9 +133,11 @@ class functions:
             electric_field.append(new_num)
         return electric_field
 
-    def current_over_voltage_eq(self):
+    def current_over_voltage_eq(self, v_data, c_data):
+        # v_data & c_data cant be refered to as self as this needs
+        # positive or negative values only
         current_over_voltage = []
-        for voltage, current in zip(self.v_data, self.c_data):
+        for voltage, current in zip(v_data, c_data):
             if voltage == 0 or current == 0:
                 current_over_voltage.append(0)
                 # for checking for divide by zero error
@@ -146,12 +146,9 @@ class functions:
             current_over_voltage.append(new_num)
         return current_over_voltage
 
-    def voltage_to_the_half_eq(self):
+    def voltage_to_the_half_eq(self, v_data):
         voltage_to_the_half = []
-        for voltage in self.v_data:
+        for voltage in v_data:
             new_num = voltage ** 1 / 2
             voltage_to_the_half.append(new_num)
         return voltage_to_the_half
-
-
-
