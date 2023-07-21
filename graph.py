@@ -1,9 +1,9 @@
 import originpro as op
-import ClassEquations as ce
+import data_manipulation as dm
 import file_managment as fm
 
 
-class plot_graph:
+class plot:
     """
     Class for all functions for data manipulation
 
@@ -19,9 +19,9 @@ class plot_graph:
     """
 
     def __init__(self, voltage_data, current_data, directory_path, \
-                 filename, graph_template_folder, template_name='Electron_transport_Final.otpu', \
-                 distance=100E-9, area=100E-6, save_image=False) -> None:
-
+                 filename, graph_template_folder, save_image=False, \
+                 template_name='Electron_transport_Final.otpu', \
+                 distance=100E-9, area=100E-6) -> None:
         self.v_data = voltage_data
         self.c_data = current_data
         self.d_path = directory_path
@@ -33,7 +33,7 @@ class plot_graph:
         self.save_img = save_image
 
         # start an instance of this the classes needed
-        self.func = ce.functions(self.v_data,self.c_data)
+        self.func = dm.functions(self.v_data, self.c_data)
         self.fm = fm.directory()
         self.fm.d_path = self.d_path
 
@@ -54,11 +54,11 @@ class plot_graph:
         gp.lname = wksn.lname  # longname
         # gp.name = wks.name # short name
 
-    def plot_origin_using_python(self):
+    def plot_origin_using_python(self, plot_type):
         # This works only for my use case, please ignore
 
         wks = op.new_book('w', lname=f"{self.fn}", hidden=False)[0]
-        abs_current = ce.absolute_val(self.c_data)
+        abs_current = dm.absolute_val(self.c_data)
 
         # plot first 3 voltage current and abs(current)
         wks.from_list(0, self.v_data, 'Voltage', units='V')
@@ -92,21 +92,26 @@ class plot_graph:
         voltage_to_the_half_n = self.func.voltage_to_the_half_eq(voltage_data_negative)
 
         # get positive values and plot for positive regions only
-        wks.from_list(7, ce.absolute_val(voltage_data_negative), 'abs(Voltage)', units='V')
-        wks.from_list(8, ce.absolute_val(current_data_negative), 'abs(Current)', units='A')
-        wks.from_list(9, ce.absolute_val(current_density_n), 'abs(Current Density)', units='A/cm^2')
-        wks.from_list(10, ce.absolute_val(electric_field_n), 'abs(Electric Field)', units='V/cm')
-        wks.from_list(11, ce.absolute_val(current_over_voltage_n), 'abs(Current/Voltage)', units='A/v')
-        wks.from_list(12, ce.absolute_val(voltage_to_the_half_n), 'abs(Voltage^1/2)', units='V^1/2')
+        wks.from_list(7, dm.absolute_val(voltage_data_negative), 'abs(Voltage)', units='V')
+        wks.from_list(8, dm.absolute_val(current_data_negative), 'abs(Current)', units='A')
+        wks.from_list(9, dm.absolute_val(current_density_n), 'abs(Current Density)', units='A/cm^2')
+        wks.from_list(10, dm.absolute_val(electric_field_n), 'abs(Electric Field)', units='V/cm')
+        wks.from_list(11, dm.absolute_val(current_over_voltage_n), 'abs(Current/Voltage)', units='A/v')
+        wks.from_list(12, dm.absolute_val(voltage_to_the_half_n), 'abs(Voltage^1/2)', units='V^1/2')
 
         # plots the graph using template provided, must be a clonable template
         electron_transport = self.g_temp_folder + 'Electron_transport_Final.otpu'
         iv_log = self.g_temp_folder + 'LOG+IV_v3.otpu'
+        #wks.plot_cloneable(iv_log)
+        print(plot_type)
 
-        if not self.save_img == True:
+        if plot_type == 'transport':
             wks.plot_cloneable(electron_transport)
-        else:
+            self.save_transport()
+
+        if plot_type == 'iv_log':
             wks.plot_cloneable(iv_log)
+            self.save_iv_log()
 
         # Fix short and long names of files
         wks.lname = f"{self.fn}"
@@ -114,7 +119,7 @@ class plot_graph:
         gp.lname = wks.lname
         gp.name = wks.name
 
-    def plot_transport_and_save(self):
+    def save_transport(self):
         # check_if_folder_exists(self.d_path, 'Exported Graphs png (Transport)')
         # reference if needed
 
@@ -126,11 +131,13 @@ class plot_graph:
         g.save_fig(str(exported_path) + '\\' + f"{filename_ext}")
         print("Transport image saved")
 
-    def plot_iv_log_and_save(self):
+    def save_iv_log(self):
         # check_if_folder_exists(self.d_path, 'Exported Graphs png (iv_log)')
         # reference if needed
+
         self.fm.fol_name = 'Exported Graphs png (iv_log)'
         self.fm.check_if_folder_exists()
+
         g = op.find_graph()
         filename_ext = f"{self.fn}" + '.png'
         exported_path = self.d_path + '\\Exported Graphs png (iv_log)'

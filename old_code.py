@@ -1,3 +1,40 @@
+# # loops through directory_path splits data and plots into origin using template from folder
+# for filename in os.listdir(directory_path):
+#     file_path = os.path.join(directory_path, filename)
+#     if os.path.isdir(file_path):
+#         # skip directories ie folders
+#         continue
+#
+#     # do something with the file
+#     if not filename.endswith(p.ignore_files):
+#         with open(os.path.join(directory_path, filename), 'r') as file:
+#
+#             # Splits iv sweep into usable arrays
+#
+#             voltage_data, current_data = dm.split_iv_sweep(file_path)
+#
+#             # beings the plotting depending on boolean parameters
+#             if save_image == True:
+#
+#                 # Graphs use python for the calculations
+#                 pg = g.plot(voltage_data, current_data, directory_path, filename, graph_template_folder)
+#                 pg.plot_origin_using_python()
+#
+#                 if Plot_iv_log_only:
+#
+#                     pg.save_iv_log()
+#
+#                 else:
+#                     # plots transport where python does all the calculations
+#                     pg.save_transport()
+#             else:
+#                 # plots transport graphs where origin calculates the columns
+#                 # used for own template
+#                 pg.plot_into_workbook()
+
+
+
+
 #fill this in, give directorys
 ################################################
 # #File Paths
@@ -24,13 +61,13 @@
 #             #Splits iv sweep into usable arrays
 #             x_vals, y_vals = pof.split_iv_sweep(file_path)
 #             # beings the ploting depending on boolean parameters
-#             if Pictures == True:
+#             if save_image == True:
 #                 # Graphs use python for the calculations
 #                 pof.plot_into_workbook_cal(x_vals, y_vals, area, distance, graph_template_folder, filename, Plot_iv_log_only)
 #                 if Plot_iv_log_only:
-#                     pof.plot_iv_log_and_save(directory_path, filename)
+#                     pof.save_iv_log(directory_path, filename)
 #                 else:
-#                     pof.plot_transport_and_save(directory_path, filename)
+#                     pof.save_transport(directory_path, filename)
 #             else:
 #                 # uses origin for all the calculations this uses a different graph template
 #                 pof.plot_into_workbook(x_vals, y_vals, graph_template_folder, filename, 'MasterTemplate_v2.ogwu')
@@ -56,13 +93,13 @@
 #         #Splits iv sweep into usable arrays
 #         x_vals, y_vals = pof.split_iv_sweep(file_path)
 #         # beings the ploting depending on boolean parameters
-#         if Pictures == True:
+#         if save_image == True:
 #             # Graphs use python for the calculations
 #             pof.plot_into_workbook_cal(x_vals, y_vals, area, distance, graph_template_folder, filename, Plot_iv_log_only)
 #             if Plot_iv_log_only:
-#                 pof.plot_iv_log_and_save(directory_path, filename)
+#                 pof.save_iv_log(directory_path, filename)
 #             else:
-#                 pof.plot_transport_and_save(directory_path, filename)
+#                 pof.save_transport(directory_path, filename)
 #         else:
 #             # uses origin for all the calculations this uses a different graph template
 #             pof.plot_into_workbook(x_vals, y_vals, graph_template_folder, filename, 'MasterTemplate_v2.ogwu')

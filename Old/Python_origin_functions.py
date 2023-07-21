@@ -1,8 +1,6 @@
 import originpro as op
-import os
-import re
 import sys
-import Equations as eq
+from Old import Equations as eq
 
 
 # gl.SetData()

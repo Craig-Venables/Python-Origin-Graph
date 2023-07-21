@@ -4,19 +4,20 @@ import tkinter as tk
 from tkinter import simpledialog
 import sys
 from pathlib import Path
-import ClassGraph as cg
-import ClassEquations as ce
+import graph as g
+import data_manipulation as dm
 import parameters as p
 
-
 ##################################################################################
-# Fill in these Values of depending on device
-
-# if save file already exists within folder this breaks!
+# save file?
 save_file = True
-Pictures = True  # export pictures to folder?
+# export pictures to folder?
+save_image = True
+# plot where python does calculations
 Plot_iv_log_only = True
+# if debugging set True
 debugging = False
+# Close origin after completion
 close_origin = False
 
 ###################################################################################
@@ -31,20 +32,11 @@ if debugging:
     directory_path = Path(r"C:\Users\ppxcv1\OneDrive - The University of Nottingham\Desktop\Origin Test Folder")
 
 # tile windows?
-cg.plot_graph.tile_all_windows(False)
-#pof.tile_all_windows(False)
-##################################################################################
+g.plot.tile_all_windows(False)
 
-# Ensures Origin gets shut down if an uncaught exception
-# if op and op.oext:
-#     sys.excepthook = pof.origin_shutdown_exception_hook
-# #fix
-
-# Only run if external Python
-if op.oext:
-    op.set_show(True)
-
-
+# Only run if external Python, Opens instance of origin
+# if op.oext:
+#     op.set_show(True)
 
 # Input GUI box
 ROOT = tk.Tk()
@@ -54,70 +46,71 @@ if not debugging:
                                                    prompt='please give working data folder path')
     directory_path = rf"{user_data_folder_temp}"
     # checks if user made input if not breaks
-    ce.functions.empty_variable(user_data_folder_temp)
-    #pof.empty_variable(user_data_folder_temp)
+    dm.functions.empty_variable(user_data_folder_temp)
 
-# loops through directory given called directory path
+
+# todo create the main loops as a function adding in the op.oext: function to open multiple instances /
+#  of origin graph: try however and find a limit so it does not open too many!
+
+#, other_template=None, transport=None, iv_log=None
+def main(plot_type):
+    # Only run if external Python, Opens instance of origin
+    if op.oext:
+        op.set_show(True)
+
+    # loops through directory_path splits data and plots into origin using template from folder
+    for filename in os.listdir(directory_path):
+        file_path = os.path.join(directory_path, filename)
+        if os.path.isdir(file_path):
+            # skip directories ie folders
+            continue
+
+        # do something with the file
+
+        if not filename.endswith(p.ignore_files):
+            with open(os.path.join(directory_path, filename), 'r') as file:
+
+                # Splits iv sweep into usable arrays
+
+                voltage_data, current_data = dm.split_iv_sweep(file_path)
+
+                # Graphs use python for the calculations
+                pg = g.plot(voltage_data, current_data, directory_path, filename, graph_template_folder)
+                pg.plot_origin_using_python(plot_type)
+
+
+available_plot_types = ['iv_log', 'transport']
+
+#main('iv_log')
+
+for plot_types in available_plot_types:
+    main(plot_types)
+#loops through directory given called directory path
+
+
+
 #
 
-
-# loops through directory_path splits data and plots into origin using template from folder
-for filename in os.listdir(directory_path):
-    file_path = os.path.join(directory_path, filename)
-    if os.path.isdir(file_path):
-        # skip directories ie folders
-        continue
-
-    # do something with the file
-    if not filename.endswith(p.ignore_files):
-        with open(os.path.join(directory_path, filename), 'r') as file:
-
-            # Splits iv sweep into usable arrays
-
-            voltage_data, current_data = ce.split_iv_sweep(file_path)
-
-            #voltage_data, current_data = ce.split_iv_sweep()
-            # voltage_data, current_data = pof.split_iv_sweep(file_path)
-
-            # beings the plotting depending on boolean parameters
-            if Pictures == True:
-                # Graphs use python for the calculations
-                pg = cg.plot_graph(voltage_data,current_data,directory_path,filename,graph_template_folder )
-                pg.plot_origin_using_python()
-
-                #pof.plot_into_workbook_cal(x_vals, y_vals, area, distance, graph_template_folder, filename,
-                #                           Plot_iv_log_only)
-                if Plot_iv_log_only:
-
-                    #pof.plot_iv_log_and_save(directory_path, filename)
-                    pg.plot_iv_log_and_save()
-                else:
-                    #pof.plot_transport_and_save(directory_path, filename)
-                    pg.plot_transport_and_save()
-            else:
-                # uses origin for all the calculations this uses a different graph template
-                #pof.plot_into_workbook(x_vals, y_vals, graph_template_folder, filename, 'MasterTemplate_v2.ogwu')
-                pg.plot_into_workbook()
-
-
-            # # splits data from file and plots within origin
-            # print(f"{filename}")
-            #
-            # # save fig dosnt work though
-            # g = op.find_graph()
-            # filename_ext = f"{filename}" + '.png'
-            # g.save_fig(str(directory_path) + '\\' + f"{filename_ext}", width=500)
-            # print("this is", directory_path)
+# # splits data from file and plots within origin
+# print(f"{filename}")
+#
+# # save fig dosnt work though
+# g = op.find_graph()
+# filename_ext = f"{filename}" + '.png'
+# g.save_fig(str(directory_path) + '\\' + f"{filename_ext}", width=500)
+# print("this is", directory_path)
 
 # Save the project to data folder
 if save_file == True:
     if op.oext:
         op.save(str(directory_path) + "\\" + 'Graphs.opju')
-        print("saved file in " f"{directory_path}")
+        print("")
+        print("saved origin file in " f"{directory_path}")
+        print("")
 
 # Only run if external Python
 if close_origin == True:
     if op.oext:
         op.exit()
 
-print(__file__)
+# print(__file__)
