@@ -1,6 +1,46 @@
 import originpro as op
 import data_manipulation as dm
 import file_managment as fm
+import parameters as p
+import os
+
+
+
+def plot_in_origin(plot_type, save_file, directory_path,graph_template_folder):
+    # Only run if external Python, Opens instance of origin
+    if op.oext:
+        op.set_show(True)
+
+    # loops through directory_path splits data and plots into origin using template from folder
+    for filename in os.listdir(directory_path):
+        file_path = os.path.join(directory_path, filename)
+        if os.path.isdir(file_path):
+            # skip directories ie folders
+            continue
+
+        # do something with the file
+
+        if not filename.endswith(p.ignore_files):
+            with open(os.path.join(directory_path, filename), 'r') as file:
+                # Splits iv sweep into usable arrays
+
+                voltage_data, current_data = dm.split_iv_sweep(file_path)
+
+                # Graphs use python for the calculations
+                pg = plot(voltage_data, current_data, directory_path, filename, graph_template_folder)
+                pg.plot_origin_using_python(plot_type)
+
+    # save the file?
+    if save_file == True:
+        if op.oext:
+            op.save(str(directory_path) + "\\" + f"{plot_type}" + 'graphs')
+            print("")
+            print("saved origin file in " f"{directory_path}")
+            print("")
+
+    # Closes that instance of origin
+    if op.oext:
+        op.exit()
 
 
 class plot:
@@ -102,7 +142,7 @@ class plot:
         # plots the graph using template provided, must be a clonable template
         electron_transport = self.g_temp_folder + 'Electron_transport_Final.otpu'
         iv_log = self.g_temp_folder + 'LOG+IV_v3.otpu'
-        #wks.plot_cloneable(iv_log)
+        # wks.plot_cloneable(iv_log)
         print(plot_type)
 
         if plot_type == 'transport':
