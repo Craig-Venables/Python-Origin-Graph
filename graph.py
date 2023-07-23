@@ -7,6 +7,9 @@ import os
 
 
 def plot_in_origin(plot_type, save_file, directory_path,graph_template_folder):
+    """ This opens an instance of origin for a given folder, takes all the data from a file
+    and plots it , it does this for all the data files within the folder. It also saves the data as pictures. """
+
     # Only run if external Python, Opens instance of origin
     if op.oext:
         op.set_show(True)
@@ -31,9 +34,9 @@ def plot_in_origin(plot_type, save_file, directory_path,graph_template_folder):
                 pg.plot_origin_using_python(plot_type)
 
     # save the file?
-    if save_file == True:
+    if save_file:
         if op.oext:
-            op.save(str(directory_path) + "\\" + f"{plot_type}" + 'graphs')
+            op.save(str(directory_path) + "\\" + f"{plot_type}" + ' graphs')
             print("")
             print("saved origin file in " f"{directory_path}")
             print("")

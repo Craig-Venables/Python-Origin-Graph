@@ -23,3 +23,5 @@ Plot_iv_log_only = True
 debugging = False
 # Close origin after completion
 close_origin = False
+#
+perform_action_on_single_directory = False
