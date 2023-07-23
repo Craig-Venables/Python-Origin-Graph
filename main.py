@@ -8,6 +8,10 @@ import graph as g
 import data_manipulation as dm
 import parameters as p
 
+# todo go through each folder and subfolders plotting until completed and
+# and there is no more folders/sub folders to go through. fix it so that it dosnt replot if there is already data their,
+# add an expction to overside this though.
+
 
 # for the executable
 application_path = os.path.dirname(sys.executable)
