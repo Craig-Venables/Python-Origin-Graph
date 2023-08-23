@@ -65,6 +65,7 @@ class plot:
                  filename, graph_template_folder, save_image=False, \
                  template_name='Electron_transport_Final.otpu', \
                  distance=100E-9, area=100E-6) -> None:
+
         self.v_data = voltage_data
         self.c_data = current_data
         self.d_path = directory_path
@@ -98,7 +99,9 @@ class plot:
         # gp.name = wks.name # short name
 
     def plot_origin_using_python(self, plot_type):
+        ''' think this takes arrays of numbers '''
         # This works only for my use case, please ignore
+
 
         wks = op.new_book('w', lname=f"{self.fn}", hidden=False)[0]
         abs_current = dm.absolute_val(self.c_data)

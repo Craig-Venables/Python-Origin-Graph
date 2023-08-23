@@ -22,7 +22,11 @@ def split_iv_sweep(filepath):
         if value:
             v_data_array.append(value[0])
             c_data_array.append(value[1])
+    # Returns array if v_data and c_data
     return v_data_array, c_data_array
+
+
+
 
 
 # graph1 = functions(voltage_data,current_data)
@@ -48,11 +52,20 @@ class functions:
         self.area = area
         self.filepath = filepath
 
+        # Values calculated within this class for use later, should run upon creating an instance of this class
+
+        self.v_data_ps, self.c_data_ps = functions.filter_positive_values()
+        self.v_data_ng, self.c_data_ng = functions.filter_negative_values()
+
+
+
         self.direct = fm.directory()
         self.direct.filepath = self.filepath
 
     # return positive values of Voltage and corresponding Current
     def filter_positive_values(self):
+        ''' Takes the data given too it within the class (current and voltage arrays)
+        and returns only the positive values in place of zeros if they are negative '''
         result_voltage = []
         result_current = []
         for v, c in zip(self.v_data, self.c_data):
@@ -65,7 +78,9 @@ class functions:
         return result_voltage, result_current
 
     def filter_negative_values(self):
-        """ """
+        ''' Takes the data given too it within the class (current and voltage arrays)
+        and returns only the negative values in place of zeros if they are positive
+        takes arrays '''
         result_voltage = []
         result_current = []
         for v, c in zip(self.v_data, self.c_data):
