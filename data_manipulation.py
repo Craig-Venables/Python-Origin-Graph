@@ -54,8 +54,9 @@ class functions:
 
         # Values calculated within this class for use later, should run upon creating an instance of this class
 
-        self.v_data_ps, self.c_data_ps = functions.filter_positive_values()
-        self.v_data_ng, self.c_data_ng = functions.filter_negative_values()
+
+        self.v_data_ps, self.c_data_ps = self.filter_positive_values()
+        self.v_data_ng, self.c_data_ng = self.filter_negative_values()
 
 
 

@@ -114,6 +114,7 @@ class plot:
         # find  positive values for data using functions "rpv"
         self.func.v_data = self.v_data
         self.func.c_data = self.c_data
+        print (self.v_data)
         voltage_data_positive, current_data_positive = self.func.filter_positive_values()
 
         # run data through equations for positive values.
@@ -153,17 +154,23 @@ class plot:
 
         if plot_type == 'transport':
             wks.plot_cloneable(electron_transport)
+            # Fix short and long names of files
+            wks.lname = f"{self.fn}"
+            gp = op.find_graph()
+            gp.lname = wks.lname
+            gp.name = wks.name
+
             self.save_transport()
 
         if plot_type == 'iv_log':
             wks.plot_cloneable(iv_log)
-            self.save_iv_log()
+            # Fix short and long names of files
+            wks.lname = f"{self.fn}"
+            gp = op.find_graph()
+            gp.lname = wks.lname
+            gp.name = wks.name
 
-        # Fix short and long names of files
-        wks.lname = f"{self.fn}"
-        gp = op.find_graph()
-        gp.lname = wks.lname
-        gp.name = wks.name
+            self.save_iv_log()
 
     def save_transport(self):
         # check_if_folder_exists(self.d_path, 'Exported Graphs png (Transport)')

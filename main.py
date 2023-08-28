@@ -39,7 +39,7 @@ available_plot_types = ['iv_log', 'transport']
 
 def process_directories_with_exceptions(directory_path):
     # List of folder names to skip
-    exceptions = ["Exported Graphs png (iv_log)", "Exported Graphs png (Transport)"]
+    exceptions = ["Exported Graphs png (iv_log)", "Exported Graphs png (Transport)" ,"device_data_calculations" , "powerpoints" , "0) Polymer thickness"]
 
     # Walk through the directory and its subdirectories
     for root, dirs, _ in os.walk(directory_path):
